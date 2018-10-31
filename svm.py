@@ -49,11 +49,11 @@ from sklearn.model_selection import *
 features, labels = load_preprocessed_data()
 x_train, y_train, x_test, y_test = split_train_test(features, labels, rate=0.9)
 
-C_range = np.logspace(-2, 10, 13)
-gamma_range = np.logspace(-9, 3, 13)
-kernels = ["linear", "poly", "rbf", "sigmoid"]
+C_range = np.logspace(-1, 3, 5)
+gamma_range = np.logspace(-3, 1, 5)
+kernels = ["linear", "poly", "rbf"]
 param_grid = dict(gamma=gamma_range, C=C_range, kernel=kernels)
 # cv = StratifiedShuffleSplit(n_splits=5, test_size=0.2, random_state=42)
-grid = GridSearchCV(SVC(), param_grid=param_grid, n_jobs=-1)
+grid = GridSearchCV(SVC(), param_grid=param_grid, n_jobs=-1, verbose=2)
 grid.fit(x_train, y_train)
 pickle.dump(grid, 'model_saved/grid_svm.model')
