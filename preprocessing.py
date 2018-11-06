@@ -2,6 +2,7 @@ from keras.applications import vgg16
 from keras.preprocessing import image
 from keras.applications.vgg16 import preprocess_input
 from keras.models import Model
+import tensorflow as tf
 import numpy as np
 import os
 
@@ -29,6 +30,7 @@ def split_train_test(x, y, rate=0.8):
 class PretrainedModel(object):
     def __init__(self):
         self.model = self.__load_model__()
+        self.graph = tf.get_default_graph()
 
     def __load_model__(self):
         model = vgg16.VGG16(weights='imagenet', include_top=True)
@@ -40,8 +42,8 @@ class PretrainedModel(object):
         x = image.img_to_array(img)
         x = np.expand_dims(x, axis=0)
         x = preprocess_input(x)
-
-        feature = self.model.predict(x).reshape(-1)
+        with self.graph.as_default():
+            feature = self.model.predict(x).reshape(-1)
         # print(feature.shape)
         return feature
 
