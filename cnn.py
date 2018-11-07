@@ -34,7 +34,7 @@ class CNN(object):
 
         model = Model(inputs=model_inputs, outputs=predictions_class)
 
-        model.load_weights("best-weights-073.hdf5", by_name=True)
+        model.load_weights("model_saved/best-weights-073.hdf5", by_name=True)
         self.model = model
         # return model
 
