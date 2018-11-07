@@ -17,7 +17,7 @@ class Models(object):
     def __init__(self):
         self.preprocessing_tranferlearning = preprocessing.PretrainedModel()
         self.svm = pickle.load(open('model_saved/svm.model', 'rb'))
-        self.knn = self.svm
+        self.knn = pickle.load(open('model_saved/knn.model', 'rb'))
         self.cnn = CNN()
         self.current_image_url = None
 
