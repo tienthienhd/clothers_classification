@@ -19,6 +19,10 @@ class Models(object):
         self.svm = pickle.load(open('model_saved/svm.model', 'rb'))
         self.knn = self.svm
         self.cnn = CNN()
+        self.current_image_url = None
+
+    def set_image_url(self, local_url):
+        self.current_image_url = local_url
 
     def download(self, url_image):
         '''
@@ -26,7 +30,7 @@ class Models(object):
         :return: url local of image
         '''
         idx = url_image.rfind('/')
-        url_local = "static/images/" + url_image[idx+1:]
+        url_local = "static/image_test/" + url_image[idx+1:]
         if url_image.startswith('http'):
             print('Save file download to', url_local)
             # download
@@ -41,20 +45,23 @@ class Models(object):
                     f.write(block)
 
             print('Downloaded '+ url_image)
+            self.current_image_url = url_local
             return url_local
+        self.current_image_url = url_image
         return url_image
 
-    def predict(self, url_image):
-        url_local = self.download(url_image)
+    def predict(self):
         # tranfer learning
-        feature = self.preprocessing_tranferlearning.get_extracted_feature(url_local)
+        feature = self.preprocessing_tranferlearning.get_extracted_feature(
+            self.current_image_url)
         feature = np.reshape(feature, (1, len(feature)))
         result_svm = mapping[self.svm.predict(feature)[0]]
         result_knn = mapping[self.knn.predict(feature)[0]]
 
         # cnn
-        result_cnn = self.cnn.predict(url_local)
+        result_cnn = self.cnn.predict(self.current_image_url)
         print(result_cnn)
+        self.current_image_url = None
         return result_svm, result_knn, result_cnn
 
 # model = Models()

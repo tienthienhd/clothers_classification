@@ -102,11 +102,13 @@
                                         <div class="product-entry">
                                             <div class="product-img">
                                                 <!--Upload file-->
-                                                <input data-label="Upload" class="filepicker" multiple="" type="file"
-                                                       name="origin_picture" id="origin_picture"
-                                                       accept="image/png, image/jpeg, image/jpg"
+                                                <form id="upload-file" method="POST" enctype="multipart/form-data">
+                                                    <input data-label="Upload" class="filepicker" multiple="" type="file"
+                                                           name="file" id="origin_picture"
+                                                           accept="image/png, image/jpeg, image/jpg"
 
-                                                >
+                                                    >
+                                                </form>
                                             </div>
                                         </div>
 
@@ -117,13 +119,19 @@
                                             <div class="product-img">
                                                 <!--download-->
                                                 <div class="row form-group">
-                                                    <div class="col-md-4">
-                                                        <button class="btn btn-primary">Download
-                                                        </button>
+                                                    <div class="row">
+                                                        <input type="text" name="picture_url" class="form-control input-number" placeholder="URL OF IMAGE" id="picture_url">
+                                                        <img src="" id="image_downloaded">
                                                     </div>
-                                                    <div class="col-md-8">
-                                                        <input type="text" name="picture_url" class="form-control input-number" placeholder="link download" id="picture_url">
+
+                                                    <div class="row">
+                                                        <!--<div class="col-md-4"></div>-->
+                                                        <div class="col-md-4">
+                                                            <button class="btn btn-primary" id="download_image">Download</button>
+                                                        </div>
+                                                        <!--<div class="col-md-4"></div>-->
                                                     </div>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -232,63 +240,66 @@
 <script src="{{url_for('static', filename='js/jquery.filepicker.js')}}" type="text/javascript"></script>
 <script>
 	$(function() {
-	  $("input[type='file'].filepicker").filepicker();
-	  $("#origin_picture").change(function(e){
+    $("input[type='file'].filepicker").filepicker();
 
-	  });
-	  $("#classify").click(function(){
-	  	downloadPicture();
-	  })
-	  function downloadPicture(){
-	  	 var reqData = {
-		  	url: $("#picture_url").val()
-		  }
-		  <!--console.log(reqData);-->
-		  $.post(
-		  	'/query',
-		  	{url: $("#picture_url").val()},
-		  	function(result){
-		  	     if('error' in result){
-		  	        alert(result['error']);
-		  	     }
+    $("#origin_picture").change(function(e) {
+        var form_data = new FormData($('#upload-file')[0]);
+        $.ajax({
+            type: 'POST',
+            url: '/upload_file',
+            data: form_data,
+            contentType: false,
+            cache: false,
+            processData: false,
+            success: function(data) {
+                console.log(data);
+            },
+        });
+    });
 
-		  	    function get_type(type){
-		  	        if(type == 'camo'){
-		  	            return '<span class="label label-primary" style="font-size: 120%">Camo</span>';
-		  	        } else if(type == 'baroque'){
-		  	            return '<span class="label label-info" style="font-size: 120%">Baroque</span>';
-		  	        } else if(type == 'color_block'){
-		  	            return '<span class="label label-warning" style="font-size: 120%">Solid block</span>';
-		  	        } else if(type == 'solid_color'){
-		  	            return '<span class="label label-success" style="font-size: 120%">Solid color</span>';
-		  	        } else if(type == 'leopard'){
-		  	            return '<span class="label label-danger" style="font-size: 120%">Leopard</span>';
-		  	        }
-		  	        console.log(type);
-		  	    }
+    $("#classify").click(function() {
+        $.post('/query', {}, function(result){
+            if ('error' in result) {
+                alert(result['error']);
+                return 'error'
+            }
+            function get_type(type) {
+                if (type == 'camo') {
+                    return '<span class="label label-primary" style="font-size: 120%">Camo</span>';
+                } else if (type == 'baroque') {
+                    return '<span class="label label-info" style="font-size: 120%">Baroque</span>';
+                } else if (type == 'color_block') {
+                    return '<span class="label label-success" style="font-size: 120%">Color block</span>';
+                } else if (type == 'solid_color') {
+                    return '<span class="label label-warning" style="font-size: 120%">Solid color</span>';
+                } else if (type == 'leopard') {
+                    return '<span class="label label-danger" style="font-size: 120%">Leopard</span>';
+                }
+                console.log(type);
+            }
 
+            console.log(result);
+            $('#svm').html(get_type(result['svm']));
+            $('#knn').html(get_type(result['knn']));
+            $("#cnn").html(get_type(result['cnn']));
+
+        });
+    });
+
+    $("#download_image").click(function() {
+        var reqData = {
+            url: $("#picture_url").val()
+        }
+        $.post('/download_file', {
+                url: $("#picture_url").val()
+            }, function(result){
                 console.log(result);
-		  	    $('#svm').html(get_type(result['svm']));
-                $('#knn').html(get_type(result['knn']));
-		  		$("#cnn").html(get_type(result['cnn']));
+                $("#image_downloaded").attr("src",result);
+            });
 
-		  	});
-		  /*$.ajax({
-		        method: "POST",
-		        type: "POST",
-		        url: "/query",
-		        data: JSON.stringify(reqData),
-		        dataType: "json",
-		        contentType: "application/json; charset=utf-8",
-		        headers: {
-		            "Content-Type": "application/json",
-		        }
-		   }).done(function (rs) {             
-		         console.log(rs);
-		   });*/
-	  }
-	  
-	});
+    });
+
+});
 
 	</script>
 
