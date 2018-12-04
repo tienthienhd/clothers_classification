@@ -33,7 +33,11 @@ def retrain_best():
     print('train complete! ')
 
 # tuning()
-retrain_best()
+# retrain_best()
 knn_model = pickle.load(open('model_saved/knn.model', 'rb'))
 acc = knn_model.score(x_test, y_test)
 print(acc)
+# grid = pickle.load(open('model_saved/grid_knn.model', 'rb'))
+# print(grid.best_params_)
+# import json
+# print(json.dump(grid.cv_results_, open('result_knn.txt', 'w')))

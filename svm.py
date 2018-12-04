@@ -33,7 +33,7 @@ def retrain_best():
     print('train complete! ')
 
 
-retrain_best()
+# retrain_best()
 svm_model = pickle.load(open('model_saved/svm.model', 'rb'))
 acc = svm_model.score(x_test, y_test)
 print(acc)
