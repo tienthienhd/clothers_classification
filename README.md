@@ -1,5 +1,5 @@
 # clothers_classification
 
 ## Run:
-- requirements: flask, tensorflow, keras, sklearn, numpy
-- python display.py
+- Install dependence libraries: pip install -r requirements.txt
+- Run service: python display.py
