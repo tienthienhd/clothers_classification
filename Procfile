@@ -1,1 +1,1 @@
-web: python display.py
+web: python3 display.py
